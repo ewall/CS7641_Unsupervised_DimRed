@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 from scipy.io import arff
+from yellowbrick.features.pca import PCADecomposition
 from yellowbrick.target import FeatureCorrelation
 
 SEED = 1
@@ -58,4 +59,21 @@ for (fname, label, abbrev, best_k) in runs:
 	ax.set_yticklabels(ax.get_yticklabels(), rotation=45, verticalalignment='top')
 	plt.savefig(path.join(PLOT_DIR, abbrev + "_expore_heatmap.png"), bbox_inches='tight')
 	plt.show()
+	plt.close()
+
+	# PCA Projection
+	colors = np.array(['r' if yi else 'b' for yi in y])
+	visualizer = PCADecomposition(scale=True, color=colors)
+	visualizer.fit_transform(X, y)
+	visualizer.finalize()
+	plt.savefig(path.join(PLOT_DIR, abbrev + "_expore_pca.png"), bbox_inches='tight')
+	visualizer.show()
+	plt.close()
+
+	# PCA Projection Biplot
+	visualizer = PCADecomposition(scale=True, proj_features=True)
+	visualizer.fit_transform(X, y)
+	visualizer.finalize()
+	plt.savefig(path.join(PLOT_DIR, abbrev + "_expore_biplot.png"), bbox_inches='tight')
+	visualizer.show()
 	plt.close()
