@@ -31,11 +31,16 @@ runs = (("data/creditcards_train.arff", "Credit Default", "d1", 6),
 for (fname, label, abbrev, best_k) in runs:
 	X, y, feature_names = load_data(fname)
 
+	if len(feature_names) > 10:
+		k_range = range(2, len(feature_names) + 1)
+	else:
+		k_range = range(2, 2 * len(feature_names) + 1)  # try bigger range for the small-d dataset
+
 	# find optimal k with elbow method
 	for metric in ('distortion', 'silhouette', 'calinski_harabasz'):
 		print("# Optimizing k for " + label + " with " + metric)
 		model = cluster.KMeans(precompute_distances=True, random_state=SEED, n_jobs=-1)
-		visualizer = KElbowVisualizer(model, k=(2, len(feature_names)), metric=metric, locate_elbow=False)
+		visualizer = KElbowVisualizer(model, k=k_range, metric=metric, locate_elbow=False)
 		visualizer.fit(X)
 		visualizer.ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 		visualizer.finalize()
@@ -43,7 +48,7 @@ for (fname, label, abbrev, best_k) in runs:
 		visualizer.show()
 		plt.close()
 
-	# predict clusters
+	# predict best clusters
 	print("# Clustering " + label)
 	model = cluster.KMeans(n_clusters=best_k, precompute_distances=True, random_state=SEED, n_jobs=-1)
 	y_pred = model.fit_predict(X)
@@ -51,7 +56,7 @@ for (fname, label, abbrev, best_k) in runs:
 	df.to_pickle(path.join(PKL_DIR, abbrev + "_kmeans.pickle"))  # save dataframe
 
 	# silhouette plot
-	print("# Silhouette for " + label)
+	print("# Silhouette Visualizer for " + label)
 	visualizer = SilhouetteVisualizer(model)
 	visualizer.fit(X)
 	visualizer.finalize()
@@ -70,6 +75,7 @@ for (fname, label, abbrev, best_k) in runs:
 	plt.close()
 
 	# parallel coordinates plot
+	print("# Parallel Coordinates Plot for " + label)
 	visualizer = ParallelCoordinates(features=feature_names, sample=0.1, shuffle=True, fast=True)
 	visualizer.fit_transform(X, y_pred)
 	visualizer.ax.set_xticklabels(visualizer.ax.get_xticklabels(), rotation=45, horizontalalignment='right')
