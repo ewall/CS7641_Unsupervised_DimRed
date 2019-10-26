@@ -5,6 +5,7 @@ import os.path as path
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import time
 from matplotlib.ticker import MaxNLocator
 from scipy.io import arff
 from sklearn.decomposition import PCA
@@ -26,28 +27,20 @@ def load_data(filename):
 	return dframe, classes, features
 
 
-def shrunk_cov_score(X):
-	shrinkages = np.logspace(-2, 0, 30)
-	cv = GridSearchCV(ShrunkCovariance(), {'shrinkage': shrinkages}, cv=5)
-	return np.mean(cross_val_score(cv.fit(X).best_estimator_, X, cv=5))
-
-
-def lw_score(X):
-	return np.mean(cross_val_score(LedoitWolf(), X, cv=5))
-
-
-runs = (("data/creditcards_train.arff", "Credit Default", "d1"),
-        ("data/htru_train.arff", "Pulsar Detection", "d2"))
-# runs = (("data/htru_train.arff", "Pulsar Detection", "d2"),)
-
-for (fname, label, abbrev) in runs:
-	X, y, feature_names = load_data(fname)
-
+def optimize_components(X, feature_names, label, abbrev):
 	# model selection (optimal number of components)
 	# from https://scikit-learn.org/stable/auto_examples/decomposition/plot_pca_vs_fa_model_selection.html
 
+	def shrunk_cov_score(X):
+		shrinkages = np.logspace(-2, 0, 30)
+		cv = GridSearchCV(ShrunkCovariance(), {'shrinkage': shrinkages}, cv=5)
+		return np.mean(cross_val_score(cv.fit(X).best_estimator_, X, cv=5))
+
+	def lw_score(X):
+		return np.mean(cross_val_score(LedoitWolf(), X, cv=5))
+
 	# choose number of components by cross-validation
-	n_components = np.arange(0, len(feature_names) + 1, 5)
+	n_components = np.arange(1, len(feature_names) + 1, 5)
 	pca = PCA(svd_solver='full', random_state=SEED)
 	pca_scores = []
 	for n in n_components:
@@ -60,8 +53,17 @@ for (fname, label, abbrev) in runs:
 	pca.fit(X)
 	n_components_pca_mle = pca.n_components_
 
+	# choose number of components with randomized SVD
+	pca = PCA(svd_solver='randomized', random_state=SEED)
+	pca_scores = []
+	for n in n_components:
+		pca.n_components = n
+		pca_scores.append(np.mean(cross_val_score(pca, X, cv=5)))
+	n_components_random = n_components[np.argmax(pca_scores)]
+
 	print(label + ": best n_components by PCA CV = %d" % n_components_pca)
 	print(label + ": best n_components by PCA MLE = %d" % n_components_pca_mle)
+	print(label + ": best n_components by PCA randomized SVD = %d" % n_components_random)
 
 	# create plot
 	plt.figure()
@@ -70,6 +72,8 @@ for (fname, label, abbrev) in runs:
 	            label='PCA CV: %d' % n_components_pca, linestyle='--')
 	plt.axvline(n_components_pca_mle, color='k',
 	            label='PCA MLE: %d' % n_components_pca_mle, linestyle='--')
+	plt.axvline(n_components_random, color='grey',
+	            label='PCA random: %d' % n_components_random, linestyle='--')
 
 	# compare with other covariance estimators
 	plt.axhline(shrunk_cov_score(X), color='violet',
@@ -88,3 +92,24 @@ for (fname, label, abbrev) in runs:
 	plt.show()
 	plt.close()
 
+	return n_components_pca
+
+
+runs = (("data/creditcards_train.arff", "Credit Default", "d1"),
+        ("data/htru_train.arff", "Pulsar Detection", "d2"))
+
+for (fname, label, abbrev) in runs:
+	X, y, feature_names = load_data(fname)
+
+	# model selection (optimal number of components)
+	n_components = optimize_components(X, feature_names, label, abbrev)
+
+	# save as new set of features
+	pca = PCA(n_components=n_components, svd_solver='full', random_state=SEED)
+	start_time = time.perf_counter()
+	df = pd.DataFrame(pca.fit_transform(X))
+	run_time = time.perf_counter() - start_time
+	print(label + ": run time = " + str(run_time))
+	df.to_pickle(path.join(PKL_DIR, abbrev + "_pca.pickle"))
+
+	# TODO visualize/explore
