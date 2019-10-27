@@ -5,9 +5,9 @@ import os.path as path
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import sklearn.cluster as cluster
 from matplotlib.ticker import MaxNLocator
 from scipy.io import arff
+from sklearn import cluster, metrics
 from yellowbrick.cluster import KElbowVisualizer, SilhouetteVisualizer
 from yellowbrick.features import ParallelCoordinates
 
@@ -83,3 +83,9 @@ for (fname, label, abbrev, best_k) in runs:
 	plt.savefig(path.join(PLOT_DIR, abbrev + "_kmeans_parallel.png"), bbox_inches='tight')
 	visualizer.show()
 	plt.close()
+
+	# compare with ground truth (classes)
+	print(label + ": Homogeneity Score = " + str(metrics.homogeneity_score(y, y_pred)))
+	print(label + ": V Measure Score = " + str(metrics.v_measure_score(y, y_pred)))
+	print(label + ": Mutual Info Score = " + str(metrics.mutual_info_score(y, y_pred)))
+	print(label + ": Adjusted Rand Index = " + str(metrics.adjusted_rand_score(y, y_pred)))

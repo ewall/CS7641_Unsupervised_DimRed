@@ -156,5 +156,7 @@ for (fname, label, abbrev, best_k, best_type) in runs:
 	plt.close()
 
 	# compare with ground truth (classes)
-	ari = metrics.adjusted_rand_score(y, y_pred)
-	print("*** " + label + "'s Adjusted Rand Index = " + str(ari))
+	print(label + ": Homogeneity Score = " + str(metrics.homogeneity_score(y, y_pred)))
+	print(label + ": V Measure Score = " + str(metrics.v_measure_score(y, y_pred)))
+	print(label + ": Mutual Info Score = " + str(metrics.mutual_info_score(y, y_pred)))
+	print(label + ": Adjusted Rand Index = " + str(metrics.adjusted_rand_score(y, y_pred)))
