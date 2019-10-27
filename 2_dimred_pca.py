@@ -12,6 +12,8 @@ from sklearn.decomposition import PCA
 from sklearn.covariance import ShrunkCovariance, LedoitWolf
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
+from yellowbrick.features import ParallelCoordinates
+
 
 SEED = 1
 PLOT_DIR = "plots"
@@ -88,7 +90,7 @@ def optimize_components(X, feature_names, label, abbrev):
 	plt.ylabel('CV scores')
 	plt.legend(loc='lower right')
 	plt.title(label + ": PCA model selection")
-	plt.savefig(path.join(PLOT_DIR, abbrev + "_pca.png"), bbox_inches='tight')
+	plt.savefig(path.join(PLOT_DIR, abbrev + "_pca_components.png"), bbox_inches='tight')
 	plt.show()
 	plt.close()
 
@@ -112,4 +114,11 @@ for (fname, label, abbrev) in runs:
 	print(label + ": run time = " + str(run_time))
 	df.to_pickle(path.join(PKL_DIR, abbrev + "_pca.pickle"))
 
-	# TODO visualize/explore
+	# parallel coordinates plot
+	visualizer = ParallelCoordinates(sample=0.2, shuffle=True, fast=True)
+	visualizer.fit_transform(df, y)
+	visualizer.ax.set_xticklabels(visualizer.ax.get_xticklabels(), rotation=45, horizontalalignment='right')
+	visualizer.finalize()
+	plt.savefig(path.join(PLOT_DIR, abbrev + "_pca_parallel.png"), bbox_inches='tight')
+	visualizer.show()
+	plt.close()
