@@ -106,6 +106,17 @@ for (fname, label, abbrev) in runs:
 	# model selection (optimal number of components)
 	n_components = optimize_components(X, feature_names, label, abbrev)
 
+	# plot explained variance
+	pca = PCA(random_state=SEED).fit(X)
+	plt.figure()
+	plt.plot(np.cumsum(pca.explained_variance_ratio_))
+	plt.xlabel('number of components')
+	plt.ylabel('variance (%)')
+	plt.title(label + ": Explained Variance by Number of Components")
+	plt.savefig(path.join(PLOT_DIR, abbrev + "_pca_variance.png"), bbox_inches='tight')
+	plt.show()
+	plt.close()
+
 	# save as new set of features
 	pca = PCA(n_components=n_components, svd_solver='full', random_state=SEED)
 	start_time = time.perf_counter()
