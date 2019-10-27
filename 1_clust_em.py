@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import time
 from scipy.io import arff
 from sklearn import metrics
 from sklearn import mixture
@@ -131,9 +132,13 @@ for (fname, label, abbrev, best_k, best_type) in runs:
 
 	# predict best clusters
 	model = mixture.GaussianMixture(n_components=best_k, covariance_type=best_type, random_state=SEED)
+	start_time = time.perf_counter()
 	y_pred = model.fit_predict(X)
+	run_time = time.perf_counter() - start_time
+	print(label + ": run time = " + str(run_time))
+	print(label + ": iterations until convergence = " + str(model.n_iter_))
 	df = X.assign(cluster=y_pred)
-	df.to_pickle(path.join(PKL_DIR, abbrev + "_em.pickle"))  # save dataframe
+	df.to_pickle(path.join(PKL_DIR, abbrev + "_em.pickle"))
 
 	# pairplot
 	print("# Scatterplot for " + label)

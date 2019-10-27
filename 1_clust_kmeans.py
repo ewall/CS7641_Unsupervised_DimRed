@@ -5,6 +5,7 @@ import os.path as path
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import time
 from matplotlib.ticker import MaxNLocator
 from scipy.io import arff
 from sklearn import cluster, metrics
@@ -51,9 +52,13 @@ for (fname, label, abbrev, best_k) in runs:
 	# predict best clusters
 	print("# Clustering " + label)
 	model = cluster.KMeans(n_clusters=best_k, precompute_distances=True, random_state=SEED, n_jobs=-1)
+	start_time = time.perf_counter()
 	y_pred = model.fit_predict(X)
+	run_time = time.perf_counter() - start_time
+	print(label + ": run time = " + str(run_time))
+	print(label + ": iterations until convergence = " + str(model.n_iter_))
 	df = X.assign(cluster=y_pred)
-	df.to_pickle(path.join(PKL_DIR, abbrev + "_kmeans.pickle"))  # save dataframe
+	df.to_pickle(path.join(PKL_DIR, abbrev + "_kmeans.pickle"))
 
 	# silhouette plot
 	print("# Silhouette Visualizer for " + label)
