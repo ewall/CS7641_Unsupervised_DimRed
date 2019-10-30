@@ -3,32 +3,22 @@
 
 import os.path as path
 import matplotlib.pyplot as plt
-import pandas as pd
 import seaborn as sns
 import time
 from matplotlib.ticker import MaxNLocator
-from scipy.io import arff
 from sklearn import cluster, metrics
 from yellowbrick.cluster import KElbowVisualizer, SilhouetteVisualizer
 from yellowbrick.features import ParallelCoordinates
+from util import *
 
 SEED = 1
 PLOT_DIR = "plots"
 PKL_DIR = "pickles"
 
 
-def load_xformed_data(origfile, reducedfile):
-	origdata = arff.loadarff(origfile)
-	classes = pd.DataFrame(origdata[0]).pop('class')  # y is the column named 'class'
-	classes = classes.astype(int)  # convert from binary/bytes to integers {0, 1}
-	dframe = pd.read_pickle(reducedfile)
-	features = dframe.columns.values
-	return dframe, classes, features
-
-
 if __name__ == "__main__":
 
-	runs = (("data/creditcards_train.arff", "Credit Default", "d1", 2),
+	runs = (("data/creditcards_train.arff", "Credit Default", "d1", 7),
 	        ("data/htru_train.arff", "Pulsar Detection", "d2", 6))
 
 	for (fname, label, abbrev, best_k) in runs:
