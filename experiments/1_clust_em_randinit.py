@@ -26,8 +26,8 @@ def load_data(filename):
 	return dframe, classes, features
 
 
-runs = (("data/creditcards_train.arff", "Credit Default", "d1", 2, 'tied'),
-        ("data/htru_train.arff", "Pulsar Detection", "d2", 2, 'tied'))
+runs = (("../data/creditcards_train.arff", "Credit Default", "d1", 2, 'tied'),
+        ("../data/htru_train.arff", "Pulsar Detection", "d2", 2, 'tied'))
 
 for (fname, label, abbrev, best_k, best_type) in runs:
 	X, y, feature_names = load_data(fname)
