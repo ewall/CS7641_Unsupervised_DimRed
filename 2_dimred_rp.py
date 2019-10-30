@@ -87,6 +87,6 @@ if __name__ == "__main__":
 		visualizer.fit_transform(df, y)
 		visualizer.ax.set_xticklabels(visualizer.ax.get_xticklabels(), rotation=45, horizontalalignment='right')
 		visualizer.finalize()
-		plt.savefig(path.join(PLOT_DIR, abbrev + "_pca_parallel.png"), bbox_inches='tight')
+		plt.savefig(path.join(PLOT_DIR, abbrev + "_rp_parallel.png"), bbox_inches='tight')
 		visualizer.show()
 		plt.close()
