@@ -18,8 +18,8 @@ PKL_DIR = "pickles"
 
 if __name__ == "__main__":
 
-	runs = (("data/creditcards_train.arff", "Credit Default", "d1", 8),
-	        ("data/htru_train.arff", "Pulsar Detection", "d2", 5))
+	runs = (("data/creditcards_train.arff", "Credit Default", "d1", 6),
+	        ("data/htru_train.arff", "Pulsar Detection", "d2", 4))
 
 	for (fname, label, abbrev, best_k) in runs:
 		X, y, feature_names = load_xformed_data(fname, path.join(PKL_DIR, abbrev + "_pca.pickle"))
