@@ -3,32 +3,16 @@
 
 import os.path as path
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 import time
 from matplotlib.ticker import MaxNLocator
-from scipy.io import arff
 from sklearn import random_projection
 from yellowbrick.features import ParallelCoordinates
+from util import *
 
 SEED = 1
 PLOT_DIR = "plots"
 PKL_DIR = "pickles"
-
-
-def load_data(filename):
-	data = arff.loadarff(filename)
-	dframe = pd.DataFrame(data[0])
-	classes = dframe.pop('class')  # y is the column named 'class'
-	classes = classes.astype(int)  # convert from binary/bytes to integers {0, 1}
-	features = dframe.columns.values
-	return dframe, classes, features
-
-
-def get_reconstruction_error(X, reduced, rp):
-	projected = reduced.dot(rp.components_)
-	loss = ((X - projected) ** 2).mean().sum()
-	return loss
 
 
 def optimize_components(X, feature_names, label, abbrev, chosen_n_components):
@@ -42,6 +26,7 @@ def optimize_components(X, feature_names, label, abbrev, chosen_n_components):
 
 	print(label + ": n_components with lowest RP reconstruction error = %d" % n_components[np.argmin(rp_scores)])
 	print(label + ": chosen n_components by RP reconstruction error = %d" % chosen_n_components)
+	print(label + ": chosen n_components' reconstruction error = " + str(rp_scores[chosen_n_components]))
 
 	# create plot
 	plt.figure()
@@ -90,3 +75,6 @@ if __name__ == "__main__":
 		plt.savefig(path.join(PLOT_DIR, abbrev + "_rp_parallel.png"), bbox_inches='tight')
 		visualizer.show()
 		plt.close()
+
+		#TODO why doesn't get_reconstruction_error(X, df, rp) work here?
+
