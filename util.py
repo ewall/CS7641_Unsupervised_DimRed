@@ -21,3 +21,13 @@ def load_xformed_data(origfile, reducedfile):
 	dframe = pd.read_pickle(reducedfile)
 	features = dframe.columns.values
 	return dframe, classes, features
+
+
+def get_reconstruction_error(X, reduced, model):
+	projected = reduced.dot(model.components_)
+	loss = ((X - projected) ** 2).mean().sum()
+	return loss
+
+
+if __name__ == "__main__":
+	pass

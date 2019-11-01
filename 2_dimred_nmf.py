@@ -95,4 +95,6 @@ if __name__ == "__main__":
 		plt.close()
 
 		# output reconstruction error
-		print(label + ": reconstruction error = " + str(nmf.reconstruction_err_))
+		print(label + ": reconstruction error (sklearn) = " + str(nmf.reconstruction_err_))
+		recon_err = get_reconstruction_error(X, df, nmf)
+		print(label + ": reconstruction error (mine) = " + str(recon_err))
