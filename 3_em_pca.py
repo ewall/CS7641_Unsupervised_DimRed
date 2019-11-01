@@ -17,8 +17,8 @@ PLOT_DIR = "plots"
 PKL_DIR = "pickles"
 
 
-runs = (("data/creditcards_train.arff", "Credit Default", "d1", 17, 'tied'),
-        ("data/htru_train.arff", "Pulsar Detection", "d2", 10, 'full'))
+runs = (("data/creditcards_train.arff", "Credit Default", "d1", 2, 'spherical'),
+        ("data/htru_train.arff", "Pulsar Detection", "d2", 2, 'full'))
 
 for (fname, label, abbrev, best_k, best_type) in runs:
 	X, y, feature_names = load_xformed_data(fname, path.join(PKL_DIR, abbrev + "_pca.pickle"))
