@@ -3,33 +3,24 @@
 
 import os.path as path
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 import time
 from matplotlib.ticker import MaxNLocator
-from scipy.io import arff
 from sklearn.decomposition import FastICA
 from yellowbrick.features import ParallelCoordinates
+from util import *
+
 
 SEED = 1
 PLOT_DIR = "plots"
 PKL_DIR = "pickles"
 
 
-def load_data(filename):
-	data = arff.loadarff(filename)
-	dframe = pd.DataFrame(data[0])
-	classes = dframe.pop('class')  # y is the column named 'class'
-	classes = classes.astype(int)  # convert from binary/bytes to integers {0, 1}
-	features = dframe.columns.values
-	return dframe, classes, features
-
-
 def optimize_components(X, feature_names, label, abbrev):
 	# model selection (optimal number of components)
 
 	# choose number of components by highest average kurtosis
-	n_components = np.arange(1, len(feature_names) + 1, 5)
+	n_components = np.arange(1, len(feature_names) + 1)
 	ica = FastICA(random_state=SEED)
 	ica_scores = []
 	for n in n_components:
@@ -37,13 +28,13 @@ def optimize_components(X, feature_names, label, abbrev):
 		result = pd.DataFrame(ica.fit_transform(X))
 		ica_scores.append(result.kurtosis().mean())
 	n_components_ica = n_components[np.argmax(ica_scores)]
-	print(label + ": best n_components by ICA CV = %d" % n_components_ica)
+	print(label + ": best n_components by average kurtosis = %d" % n_components_ica)
 
 	# create plot
 	plt.figure()
-	plt.plot(n_components, ica_scores, 'b', label='PCA scores')
+	plt.plot(n_components, ica_scores, 'b', label='average kurtosis by number of components')
 	plt.axvline(n_components_ica, color='b',
-	            label='ICA CV: %d' % n_components_ica, linestyle='--')
+	            label='chosen number of components: %d' % n_components_ica, linestyle='--')
 	ax = plt.gca()
 	ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 	plt.xlabel('number of components')
