@@ -17,7 +17,7 @@ PLOT_DIR = "plots"
 PKL_DIR = "pickles"
 
 
-runs = (("data/creditcards_train.arff", "Credit Default", "d1", 2, 'full'),
+runs = (("data/creditcards_train.arff", "Credit Default", "d1", 6, 'full'),
         ("data/htru_train.arff", "Pulsar Detection", "d2", 2, 'full'))
 
 for (fname, label, abbrev, best_k, best_type) in runs:
