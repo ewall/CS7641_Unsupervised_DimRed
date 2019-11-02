@@ -3,6 +3,7 @@
 
 import pandas as pd
 from scipy.io import arff
+from sklearn.preprocessing import MinMaxScaler
 
 
 def load_data(filename):
@@ -21,6 +22,12 @@ def load_xformed_data(origfile, reducedfile):
 	dframe = pd.read_pickle(reducedfile)
 	features = dframe.columns.values
 	return dframe, classes, features
+
+
+def rescale_data(X):
+	# original data was z-scored and centered around zero, so just moving it to the non-negative range 0.0 to 1.0
+	scaler = MinMaxScaler(feature_range=(0, 1), copy=False)
+	return scaler.fit_transform(X)
 
 
 def get_reconstruction_error(X, reduced, model):

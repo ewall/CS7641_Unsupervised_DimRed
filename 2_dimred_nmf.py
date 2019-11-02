@@ -8,7 +8,6 @@ import time
 from matplotlib.ticker import MaxNLocator
 from sklearn.decomposition import NMF
 from sklearn.metrics import explained_variance_score
-from sklearn.preprocessing import MinMaxScaler
 from yellowbrick.features import ParallelCoordinates
 from util import *
 
@@ -16,12 +15,6 @@ from util import *
 SEED = 1
 PLOT_DIR = "plots"
 PKL_DIR = "pickles"
-
-
-def rescale_data(X):
-	# original data was z-scored and centered around zero, so just moving it to the non-negative range 0.0 to 1.0
-	scaler = MinMaxScaler(feature_range=(0,1), copy=False)
-	return scaler.fit_transform(X)
 
 
 def optimize_components(X, feature_names, label, abbrev):
