@@ -3,31 +3,23 @@
 
 import os.path as path
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 import seaborn as sns
-from scipy.io import arff
+from yellowbrick.features import Rank1D
 from yellowbrick.features.pca import PCADecomposition
 from yellowbrick.target import FeatureCorrelation
+from util import *
+
 
 SEED = 1
 PLOT_DIR = "plots"
 PKL_DIR = "pickles"
 
 
-def load_data(filename):
-	data = arff.loadarff(filename)
-	dframe = pd.DataFrame(data[0])
-	classes = dframe.pop('class')  # y is the column named 'class'
-	classes = classes.astype(int)  # convert from binary/bytes to integers {0, 1}
-	features = dframe.columns.values
-	return dframe, classes, features
+runs = (("data/creditcards_std.arff", "Credit Default", "d1"),
+        ("data/htru_std.arff", "Pulsar Detection", "d2"))
 
-
-runs = (("data/creditcards_std.arff", "Credit Default", "d1", 6),
-        ("data/htru_std.arff", "Pulsar Detection", "d2", 4))
-
-for (fname, label, abbrev, best_k) in runs:
+for (fname, label, abbrev) in runs:
 	X, y, feature_names = load_data(fname)
 
 	# Pearson correlation with class
@@ -75,5 +67,14 @@ for (fname, label, abbrev, best_k) in runs:
 	visualizer.fit_transform(X, y)
 	visualizer.finalize()
 	plt.savefig(path.join(PLOT_DIR, abbrev + "_expore_biplot.png"), bbox_inches='tight')
+	visualizer.show()
+	plt.close()
+
+	# Rank1D plot -- assess the normality of the distribution of instances
+	visualizer = Rank1D(algorithm='shapiro')
+	visualizer.fit(X, y)
+	visualizer.transform(X)
+	visualizer.finalize()
+	plt.savefig(path.join(PLOT_DIR, abbrev + "_expore_rank1d.png"), bbox_inches='tight')
 	visualizer.show()
 	plt.close()
