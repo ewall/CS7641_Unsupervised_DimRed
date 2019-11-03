@@ -39,7 +39,7 @@ def optimize_components(X, feature_names, label, abbrev):
 	for n in n_components:
 		pca.n_components = n
 		pca_scores.append(np.mean(cross_val_score(pca, X, cv=5)))
-	n_components_pca = n_components[np.argmax(pca_scores)]  #TODO change this formula???
+	n_components_pca = n_components[np.argmax(pca_scores)]
 
 	# choose number of components by Minka's MLE
 	pca = PCA(svd_solver='full', n_components='mle', random_state=SEED)
@@ -124,11 +124,6 @@ if __name__ == "__main__":
 		print(label + ": run time = " + str(run_time))
 		df.to_pickle(path.join(PKL_DIR, abbrev + "_pca.pickle"))
 
-		#TODO why doesn't this work?
-		# output reconstruction error
-		# recon_err = get_reconstruction_error(X, df, pca)
-		# print(label + ": reconstruction error = " + str(recon_err))
-
 		# parallel coordinates plot
 		visualizer = ParallelCoordinates(sample=0.2, shuffle=True, fast=True)
 		visualizer.fit_transform(df, y)
@@ -137,3 +132,10 @@ if __name__ == "__main__":
 		plt.savefig(path.join(PLOT_DIR, abbrev + "_pca_parallel.png"), bbox_inches='tight')
 		visualizer.show()
 		plt.close()
+
+		# output reconstruction error
+		recon_err = get_reconstruction_error_pca(X, df, pca)
+		print(label + ": reconstruction error = " + str(recon_err))
+
+		# distribution of eigenvalues
+		print(label + ": eigenvalues?", pca.components_)

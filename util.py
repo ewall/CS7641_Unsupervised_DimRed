@@ -36,5 +36,11 @@ def get_reconstruction_error(X, reduced, model):
 	return loss
 
 
+def get_reconstruction_error_pca(X, reduced, model):
+	projected = model.inverse_transform(reduced)
+	loss = ((X - projected) ** 2).mean().sum()
+	return loss
+
+
 if __name__ == "__main__":
 	pass
