@@ -74,3 +74,7 @@ for (fname, label, abbrev) in runs:
 	plt.savefig(path.join(PLOT_DIR, abbrev + "_ica_parallel.png"), bbox_inches='tight')
 	visualizer.show()
 	plt.close()
+
+	# explore kurtosis
+	print(label + ": kurtosis by feature = ", df.kurtosis())
+	print(label + ": mean kurtosis = ", df.kurtosis().mean())
