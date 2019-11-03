@@ -78,3 +78,7 @@ for (fname, label, abbrev) in runs:
 	plt.savefig(path.join(PLOT_DIR, abbrev + "_expore_rank1d.png"), bbox_inches='tight')
 	visualizer.show()
 	plt.close()
+
+	# explore kurtosis
+	print(label + ": kurtosis by feature = ", X.kurtosis())
+	print(label + ": mean kurtosis = ", X.kurtosis().mean())
