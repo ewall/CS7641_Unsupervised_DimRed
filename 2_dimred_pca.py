@@ -134,7 +134,7 @@ if __name__ == "__main__":
 		plt.close()
 
 		# output reconstruction error
-		recon_err = get_reconstruction_error_pca(X, df, pca)
+		recon_err = get_reconstruction_error_invertable(X, df, pca)
 		print(label + ": reconstruction error = " + str(recon_err))
 
 		# distribution of eigenvalues

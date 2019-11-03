@@ -78,3 +78,7 @@ for (fname, label, abbrev) in runs:
 	# explore kurtosis
 	print(label + ": kurtosis by feature = ", df.kurtosis())
 	print(label + ": mean kurtosis = ", df.kurtosis().mean())
+
+	# output reconstruction error
+	recon_err = get_reconstruction_error_invertable(X, df, ica)
+	print(label + ": reconstruction error = " + str(recon_err))
