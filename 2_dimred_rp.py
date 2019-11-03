@@ -76,5 +76,13 @@ if __name__ == "__main__":
 		visualizer.show()
 		plt.close()
 
-		#TODO why doesn't get_reconstruction_error(X, df, rp) work here?
-
+		# check variation on multiple runs
+		recon_err = []
+		for i in range(50):
+			rp = random_projection.GaussianRandomProjection(n_components=n_components)
+			reduced = rp.fit_transform(X)
+			recon_err.append(get_reconstruction_error(X, reduced, rp))
+		print(label + ": reconstruction error over multiple runs = ")
+		print(recon_err)
+		print(label + ": reconstruction error over multiple runs mean = ", np.mean(recon_err))
+		print(label + ": reconstruction error over multiple runs variance = ", np.var(recon_err))
